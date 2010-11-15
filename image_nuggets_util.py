@@ -1,5 +1,5 @@
 
-import sys, os
+import sys, os, tempfile, subprocess
 from cStringIO import StringIO
 
 
@@ -32,22 +32,22 @@ def readBlobs(f):
         yield v
 
 
-# TODO: remove external deps
-import os
-from a.temp import TempDir
-from a.shell import check_communicate
-
 
 def pngOfUrl(url, delay=1.0):
     with TempDir() as td:
         
         destPath = '%s/foo-full.png' % td.path
         
-        check_communicate(['/usr/bin/env', 'python', '%s/lib/webkit2png.py' % REPO,
+        p = subprocess.Popen(['/usr/bin/env', 'python', '%s/lib/webkit2png.py' % REPO,
                                 '--fullsize', # full only
                                 '--filename=' + 'foo',
                                 '--delay=' + str(delay),
-                                url], cwd=td.path)
+                                url], cwd=td.path,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE)
+        out, err = p.communicate()
+        if p.returncode != 0:
+            raise Exception('webkit2png subprocess error\n\n' + repr(err))
         
         with open(destPath, 'rb') as f:
             return f.read()
@@ -62,9 +62,6 @@ def pngOfHtml(html, **kwargs):
         return pngOfUrl(url, **kwargs)
 
 
-# TODO: use stdio, remove external deps
-from a.shell import communicateWithReturncode
-from a.temp import TempDir
 def convertImageData(data, fromExt, toExt):
     with TempDir() as td:
         tmpdir = '/Users/a/Desktop'
@@ -74,8 +71,27 @@ def convertImageData(data, fromExt, toExt):
             f.write(data)
         #with open(src, 'rb') as f:
         #    raise Exception(repr(f.read()))
-        out, err, returncode = communicateWithReturncode(['convert', src, dest])
-        if returncode != 0:
+        
+        p = subprocess.Popen(['convert', src, dest],
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE)
+        out, err = p.communicate()
+        
+        if p.returncode != 0:
             raise Exception(err)
         with open(dest, 'rb') as f:
             return f.read()
+
+
+class TempDir:
+    
+    def __init__(self):
+        self.path = tempfile.mkdtemp()
+    
+    def __enter__(self):
+        return self
+    
+    def __exit__(self, *args):
+        subprocess.check_call(['rm', '-rf', self.path])
+
+
