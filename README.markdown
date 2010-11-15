@@ -1,7 +1,7 @@
 
 ## Introduction
 
-**<code>image-nuggets</code>** extracts sub-images from an image (or from HTML/CSS).
+**image-nuggets** extracts sub-images from an image (or from HTML/CSS).
 
 ![](https://github.com/andrewschaaf/image-nuggets/raw/master/docs/diagram.png)
 
@@ -40,8 +40,9 @@ For now, <code>image-nuggets</code> uses this and only this nugget extraction me
 ## Command-line tools
 
 <pre>cat buttons.html | image-nuggets
-                            --from=html
-                            --to=png
+                            --from=html         // or gif, png, ...
+                            --to=png            // or gif, ...
+                            --optipng-level=2   // 0-7. Optional. Use only if --to=png
                             --dest-prefix=...
                             --dest-suffixes=landing/lorem.png,landing/lorem_hover.png,...</pre>
 
