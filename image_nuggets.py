@@ -86,6 +86,7 @@ def writePpmTo(data, destPath, optipngLevel):
     p.communicate(input=data)
     
     if optipngLevel is not None:
+        assert destPath.endswith('.png')
         optipngLevel = int(optipngLevel)
         p = subprocess.Popen(['/usr/bin/env',
                                         'optipng',
