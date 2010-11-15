@@ -3,9 +3,7 @@
 
 **<code>image-nuggets</code>** extracts sub-images from an image (or from HTML/CSS).
 
-<center>
 ![](https://github.com/andrewschaaf/image-nuggets/raw/master/docs/diagram.png)
-</center>
 
 If the input is HTML, image-nuggets will use first use <code>webkit2png</code> (included) to render the input image.
 
