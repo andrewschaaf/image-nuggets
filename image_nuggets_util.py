@@ -33,13 +33,14 @@ def readBlobs(f):
 
 
 
-def pngOfUrl(url, delay=1.0):
+def pngOfUrl(url, delay=1.0, width=1500):
     with TempDir() as td:
         
         destPath = '%s/foo-full.png' % td.path
         
         p = subprocess.Popen(['/usr/bin/env', 'python', '%s/lib/webkit2png.py' % REPO,
                                 '--fullsize', # full only
+                                '--width=' + str(width),
                                 '--filename=' + 'foo',
                                 '--delay=' + str(delay),
                                 url], cwd=td.path,
