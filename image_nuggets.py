@@ -14,17 +14,14 @@ def main():
     parser.add_option('-f', '--from', dest='fromFormat', default=None)
     parser.add_option('-t', '--to', dest='toFormat', default=None)
     parser.add_option('-p', '--dest-prefix', dest='destPrefix', default=None)
-    parser.add_option('-s', '--dest-suffixes', dest='destSuffixes', default=None)
     parser.add_option('-O', '--optipng-level', dest='optipngLevel', default=None)
     options, args = parser.parse_args()
     
     # Validate options
-    assert len(args) == 0
     assert options.fromFormat
     assert options.toFormat
     assert options.destPrefix
-    assert options.destSuffixes
-    destSuffixes = options.destSuffixes.split(',')
+    destSuffixes = args
     
     # Get the subimages
     data = sys.stdin.read()

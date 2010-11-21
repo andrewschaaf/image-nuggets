@@ -44,7 +44,9 @@ For now, <code>image-nuggets</code> uses this and only this nugget extraction me
                             --to=png            // or gif, ...
                             --optipng-level=2   // 0-7. Optional. Use only if --to=png
                             --dest-prefix=...
-                            --dest-suffixes=landing/lorem.png,landing/lorem_hover.png,...</pre>
+                            landing/lorem.png
+                            landing/lorem_hover.png
+                            landing/lorem_active.png</pre>
 
 <code>image-nuggets</code> is a Python script which wraps this C program:
 
