@@ -1,5 +1,5 @@
 
-import sys, os, tempfile, subprocess
+import sys, os, re, base64, urllib2, tempfile, subprocess
 from cStringIO import StringIO
 
 
@@ -58,8 +58,50 @@ def pngOfHtml(html, **kwargs):
         path = os.path.abspath('%s/foo.html' % td.path)
         url = 'file://%s' % path
         with open(path, 'wb') as f:
-            f.write(html)
+            f.write(fetchAndInlineImages(html))
         return pngOfUrl(url, **kwargs)
+
+
+def fetchAndInlineImages(html):
+    
+    MIME_MAP = {
+        'png': 'image/png',
+        'gif': 'image/gif',
+        'jpg': 'image/jpeg',
+        'jpeg': 'image/jpeg',
+    }
+    
+    def f(m):
+        url = m.group(1)
+        ext = url.split('.')[-1]
+        mime = MIME_MAP[ext]
+        data = getDataFromUrl(url)
+        data64 = base64.b64encode(data)
+        return 'url("data:%s;base64,%s")' % (mime, data64)
+    
+    return re.sub(r'url\("([^"]*)"\)', f, html)
+
+
+def getDataFromUrl(url):
+    if url.startswith('http://'):
+        return simpleGet(url)
+    else:
+        if url.startswith('file://'):
+            path = url[len('file://'):]
+        else:
+            path = os.path.abspath(url)
+        assert os.path.isfile(path)
+        with open(path, 'rb') as f:
+            return f.read()
+
+
+def simpleGet(url, GET=None, userAgent='Python-urllib/2.6'):
+    req = urllib2.Request(url, headers={
+        'User-Agent': userAgent,
+    })
+    response = urllib2.urlopen(req)
+    b = response.read()
+    return b
 
 
 def convertImageData(data, fromExt, toExt):
