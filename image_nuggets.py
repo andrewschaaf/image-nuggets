@@ -31,7 +31,7 @@ def main():
     ppm = ppmFromInput(data, options.fromFormat)
     ppms = subppmsOf(ppm)
     if len(destSuffixes) != len(ppms):
-        fatalError('Only %d dest-suffixes for %d subimages!' % (len(destSuffixes), len(ppms)))
+        fatalError('%d dest-suffixes for %d subimages!' % (len(destSuffixes), len(ppms)))
     
     # Write the subimages
     for ppm, destSuffix in zip(ppms, destSuffixes):
