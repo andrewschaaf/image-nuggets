@@ -107,13 +107,11 @@ def simpleGet(url, GET=None, userAgent='Python-urllib/2.6'):
 
 def convertImageData(data, fromExt, toExt):
     with TempDir() as td:
-        tmpdir = '/Users/a/Desktop'
-        src = '%s/foo.%s' % (tmpdir, fromExt)
-        dest = '%s/foo.%s' % (tmpdir, toExt)
+        
+        src = '%s/foo.%s' % (td.path, fromExt)
+        dest = '%s/foo.%s' % (td.path, toExt)
         with open(src, 'wb') as f:
             f.write(data)
-        #with open(src, 'rb') as f:
-        #    raise Exception(repr(f.read()))
         
         p = subprocess.Popen(['convert', src, dest],
                         stdout=subprocess.PIPE,
