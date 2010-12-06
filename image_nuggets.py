@@ -15,7 +15,12 @@ def main():
     parser.add_option('-t', '--to', dest='toFormat', default=None)
     parser.add_option('-p', '--dest-prefix', dest='destPrefix', default=None)
     parser.add_option('-O', '--optipng-level', dest='optipngLevel', default=None)
+    parser.add_option('-q', '--quiet', dest='quiet', default=False, action='store_true')
     options, args = parser.parse_args()
+    
+    def log(s):
+        if not options.quiet:
+            sys.stderr.write(s)
     
     # Validate options
     assert options.fromFormat
@@ -23,20 +28,29 @@ def main():
     assert options.destPrefix
     destSuffixes = args
     
-    # Get the subimages
+    # Render/Load image
+    verb = 'Rendering' if options.fromFormat == 'html' else 'Loading'
+    log('%s image...\n\n' % verb)
     data = sys.stdin.read()
     ppm = ppmFromInput(data, options.fromFormat)
+    
+    # Extract subimages
+    log('Extracting subimages...\n\n')
     ppms = subppmsOf(ppm)
     if len(destSuffixes) != len(ppms):
         fatalError('%d dest-suffixes for %d subimages!' % (len(destSuffixes), len(ppms)))
     
-    # Write the subimages
+    # Save subimages
+    log('Saving subimages...\n\n')
     for ppm, destSuffix in zip(ppms, destSuffixes):
         destPath = '%s%s' % (options.destPrefix, destSuffix)
         folder = parentOf(destPath)
         if not os.path.isdir(folder):
             subprocess.check_call(['mkdir', '-p', folder])
         writePpmTo(ppm, destPath, options.optipngLevel)
+        log('    %s\n' % destSuffix)
+    
+    log('\nDone.')
 
 
 def ppmFromInput(data, format):
